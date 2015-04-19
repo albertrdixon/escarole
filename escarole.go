@@ -37,7 +37,7 @@ func main() {
 	for {
 		select {
 		case <-sig:
-			break
+			os.Exit(0)
 		case t := <-tick.C:
 			for i := 0; i < 3; i++ {
 				err := app.update(t)
