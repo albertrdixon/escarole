@@ -10,9 +10,9 @@ import (
 )
 
 var (
-	debug    = kingpin.Flag("debug", "").Short('d').Bool()
-	interval = kingpin.Flag("interval", "").Short('i').Default("30m").OverrideDefaultFromEnvar("UPDATE_INTERVAL").Duration()
-	conf     = kingpin.Flag("conf", "").Short('C').Default("/etc/escarole.yaml").OverrideDefaultFromEnvar("UPDATE_CONF").ExistingFile()
+	debug    = kingpin.Flag("debug", "Enable debug output.").Short('d').Bool()
+	interval = kingpin.Flag("interval", "Set update interval. Must be parseable by time.ParseTime (e.g. 20m, 2h, etc.).").Short('i').Default("30m").OverrideDefaultFromEnvar("UPDATE_INTERVAL").Duration()
+	conf     = kingpin.Flag("conf", "Escarole config. Must be a real file.").Short('C').Default("/etc/escarole.yaml").OverrideDefaultFromEnvar("UPDATE_CONF").ExistingFile()
 )
 
 func main() {
