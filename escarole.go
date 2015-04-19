@@ -9,8 +9,6 @@ import (
 	"gopkg.in/alecthomas/kingpin.v1"
 )
 
-const version = "v0.0.1"
-
 var (
 	debug    = kingpin.Flag("debug", "").Short('d').Bool()
 	interval = kingpin.Flag("interval", "").Short('i').Default("30m").OverrideDefaultFromEnvar("UPDATE_INTERVAL").Duration()
