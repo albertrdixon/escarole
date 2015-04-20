@@ -13,12 +13,14 @@ var goodConf = []byte(`
   name: echo
   directory: /bin
   command: "echo foobar"
+  git: false
 `)
 
 var badConf = []byte(`
 ---
   nam: echio
   cmd: "echo foobar
+  git: false
 `)
 
 var confTests = []struct {
