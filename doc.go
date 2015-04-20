@@ -1,3 +1,4 @@
+// Package escarole is a really dumb program for updating things
 package main
 
-const version = "v0.0.3"
+const version = "v0.0.4"

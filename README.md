@@ -1,5 +1,7 @@
 ### Escarole
 
+[![Build Status](https://travis-ci.org/albertrdixon/escarole.svg)](https://travis-ci.org/albertrdixon/escarole)
+
 This is *SUPER* dirty. Just threw this together to deal with updating things like Sickrage in docker containers.
 
 ## Usage
