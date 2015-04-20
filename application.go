@@ -19,14 +19,18 @@ var (
 type App struct {
 	version string
 	restart bool
-	command *exec.Cmd
 	Name    string `json:"name,omitempty"`
 	Dir     string `json:"directory,omitempty"`
 	Cmd     string `json:"command,omitempty"`
+	Git     bool   `json:"git,omitempty"`
 }
 
 func newApp(c string) *App {
-	var app App
+	app := App{
+		version: "",
+		restart: false,
+		Git:     true,
+	}
 	var buf bytes.Buffer
 	file, err := fs.Open(c)
 	if err != nil {
@@ -42,14 +46,10 @@ func newApp(c string) *App {
 		return &app
 	}
 
-	ca := strings.Split(app.Cmd, " ")
-	app.command = exec.Command(ca[0], ca[1:]...)
-	app.updateVersion()
+	if app.Git {
+		app.updateVersion()
+	}
 	return &app
-}
-
-func init() {
-	fs = &afero.OsFs{}
 }
 
 func gitPull() error {
@@ -65,7 +65,13 @@ func gitPull() error {
 	return nil
 }
 
+func restartCommand(a *App) *exec.Cmd {
+	ca := strings.Split(a.Cmd, " ")
+	return exec.Command(ca[0], ca[1:]...)
+}
+
 func (a *App) updateVersion() error {
+	a.restart = false
 	if err := os.Chdir(a.Dir); err != nil {
 		return err
 	}
@@ -96,31 +102,39 @@ func (a *App) eql(b *App) bool {
 
 func (a *App) update(t time.Time) error {
 	log.Infof("Starting update of %s at %s", a.Name, t.String())
-	a.restart = false
 
-	if err := os.Chdir(a.Dir); err != nil {
-		log.Errorf("Could not cd into %s: %v", a.Dir, err)
-		return err
+	if a.Git {
+		log.Infof("Currently %s is @ %s", a.Name, a.version)
+		if err := os.Chdir(a.Dir); err != nil {
+			log.Errorf("Could not cd into %s: %v", a.Dir, err)
+			return err
+		}
+
+		if err := gitPull(); err != nil {
+			return err
+		}
+
+		a.updateVersion()
 	}
 
-	if err := gitPull(); err != nil {
-		return err
-	}
-
-	a.updateVersion()
-	if a.restart {
-		log.Infof("Downloaded new version of %s, restarting it!", a.Name)
-
+	if a.restart || !a.Git {
+		log.Infof("Running restart command for %s.", a.Name)
 		var b bytes.Buffer
-		a.command.Stdout = &b
-		a.command.Stderr = &b
+		cmd := restartCommand(a)
+		cmd.Stdout = &b
+		cmd.Stderr = &b
 
-		err := a.command.Run()
+		err := cmd.Run()
 		if err != nil {
 			log.Errorf("Failed to run %q: %v", a.Cmd, err)
 			log.Error(b.String())
 			return err
 		}
+		log.Debugf("RESTART OUTPUT: %s", b.String())
 	}
 	return nil
+}
+
+func init() {
+	fs = &afero.OsFs{}
 }
