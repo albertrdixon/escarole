@@ -17,9 +17,6 @@ help:
 	@echo "  dep-restore"
 	@echo "  test"
 	@echo "  test-verbose"
-	@echo "  test-integration"
-	@echo "  vet"
-	@echo "  lint"
 	@echo "  build"
 	@echo "  build-docker"
 	@echo "  install"
@@ -55,4 +52,4 @@ package: build
 
 clean:
 	go clean ./...
-	rm -rf escarole
+	rm -rf escarole *.tar.gz
