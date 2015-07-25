@@ -2,8 +2,10 @@ package main
 
 import (
 	"bytes"
+	"os"
 	"testing"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/afero"
 )
@@ -35,7 +37,7 @@ var confTests = []struct {
 func TestConfigure(t *testing.T) {
 	for _, test := range confTests {
 		writeFile(test.name, test.conf)
-		app := newApp(test.name)
+		app, _ := newApp(test.name)
 		if !app.eql(test.app) {
 			t.Errorf("%q: Unmarshall'd config did not produce expected object!", test.name)
 			spew.Dump(app)
@@ -57,4 +59,6 @@ func writeFile(name string, content []byte) afero.File {
 
 func init() {
 	fs = &afero.MemMapFs{}
+	log.SetLevel(log.DebugLevel)
+	log.SetOutput(os.Stdout)
 }

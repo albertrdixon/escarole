@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"os/exec"
 	"strings"
@@ -17,39 +18,43 @@ var (
 )
 
 type App struct {
-	version string
-	restart bool
-	Name    string `json:"name,omitempty"`
-	Dir     string `json:"directory,omitempty"`
-	Cmd     string `json:"command,omitempty"`
-	Git     bool   `json:"git,omitempty"`
+	version       string
+	updated       bool
+	Name          string `json:"name,omitempty"`
+	Dir           string `json:"directory,omitempty"`
+	Cmd           string `json:"command,omitempty"`
+	Git           bool   `json:"git,omitempty"`
+	AlwaysRestart bool   `json:"always_restart,omitempty"`
 }
 
-func newApp(c string) *App {
+func (a *App) String() string {
+	return fmt.Sprintf("%s git(%t) restart(%t) ver: %s", a.Name, a.Git, a.AlwaysRestart, a.version)
+}
+
+func newApp(c string) (*App, error) {
 	app := App{
-		version: "",
-		restart: false,
-		Git:     true,
+		version:       "",
+		updated:       false,
+		AlwaysRestart: false,
+		Git:           false,
 	}
 	var buf bytes.Buffer
 	file, err := fs.Open(c)
 	if err != nil {
-		return &app
+		return &app, err
 	}
-	_, err = buf.ReadFrom(file)
-	if err != nil {
-		return &app
+	if _, err := buf.ReadFrom(file); err != nil {
+		return &app, err
 	}
 
-	err = yaml.Unmarshal(buf.Bytes(), &app)
-	if err != nil {
-		return &app
+	if err := yaml.Unmarshal(buf.Bytes(), &app); err != nil {
+		return &app, err
 	}
 
 	if app.Git {
 		app.updateVersion()
 	}
-	return &app
+	return &app, nil
 }
 
 func gitPull() error {
@@ -71,7 +76,7 @@ func restartCommand(a *App) *exec.Cmd {
 }
 
 func (a *App) updateVersion() error {
-	a.restart = false
+	a.updated = false
 	if err := os.Chdir(a.Dir); err != nil {
 		return err
 	}
@@ -90,7 +95,7 @@ func (a *App) updateVersion() error {
 	log.Debugf("git rev-parse: %s", newRev)
 	if a.version != newRev {
 		a.version = newRev
-		a.restart = true
+		a.updated = true
 		log.Infof("%s version set to %s.", a.Name, a.version)
 	}
 	return nil
@@ -98,6 +103,11 @@ func (a *App) updateVersion() error {
 
 func (a *App) eql(b *App) bool {
 	return a.Name == b.Name && a.Dir == b.Dir && a.Cmd == b.Cmd
+}
+
+func (a *App) shouldRestart() bool {
+	log.Debugf("always_restart: %t  updated: %t  git: %t", a.AlwaysRestart, a.updated, a.Git)
+	return (a.AlwaysRestart || a.updated || !a.Git)
 }
 
 func (a *App) update(t time.Time) error {
@@ -117,7 +127,7 @@ func (a *App) update(t time.Time) error {
 		a.updateVersion()
 	}
 
-	if a.restart || !a.Git {
+	if a.shouldRestart() {
 		log.Infof("Running restart command for %s.", a.Name)
 		var b bytes.Buffer
 		cmd := restartCommand(a)
