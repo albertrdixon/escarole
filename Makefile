@@ -1,9 +1,9 @@
 PROJECT = github.com/albertrdixon/escarole
 EXECUTABLE = "escarole"
+PKG = .
 LDFLAGS = "-s"
 TEST_COMMAND = godep go test
-PLATFORM = "$$(echo "$$(uname)" | tr '[A-Z]' '[a-z]')"
-VERSION = "$$(./t2 -v)"
+PLATFORMS = linux darwin
 BUILD_ARGS = ""
 
 .PHONY: dep-save dep-restore test test-verbose build install clean
@@ -40,15 +40,20 @@ test-verbose:
 
 build:
 	@echo "==> Building $(EXECUTABLE) with ldflags '$(LDFLAGS)'"
-	@godep go build -ldflags $(LDFLAGS)
+	@ GOOS=linux CGO_ENABLED=0 godep go build -a -installsuffix cgo -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-linux $(PKG)
+	@ GOOS=darwin CGO_ENABLED=0 godep go build -a -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-darwin $(PKG)
 
 install:
 	@echo "==> Installing $(EXECUTABLE) with ldflags $(LDFLAGS)"
 	@godep go install -ldflags $(LDFLAGS) $(INSTALL)
 
 package: build
-	@echo "==> Tar'ing up the binary"
-	@test -f escarole && tar czf escarole-$(PLATFORM).tar.gz escarole
+	@echo "==> Tar'ing up the binaries"
+	@for p in $(PLATFORMS) ; do \
+		echo "==> Tar'ing up $$p/amd64 binary" ; \
+		test -f bin/$(EXECUTABLE)-$$p && \
+		tar czf bin/$(EXECUTABLE)-$$p.tgz bin/$(EXECUTABLE)-$$p ; \
+	done
 
 clean:
 	go clean ./...

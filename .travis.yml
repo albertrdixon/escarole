@@ -8,7 +8,7 @@ deploy:
   provider: releases
   api_key:
     secure: Zz7LR7RybJ6DQ0FEyGNspKkkefgDUsltu+cwR2qnTrUjlJa9FAGfvv26ArwbNmff4iTq/cbDOcmDjhBBxi97b0aUn4hdz9jmPhC9WZZ045/jQA2I8wj0zy3a6zaJwF4oTWHH7qQiiMmn+ZAIFfC7zpVpk0M7JO4q5G4MZi+X/zs=
-  file: escarole-linux.tar.gz
+  file: escarole-linux.tgz
   on:
     repo: albertrdixon/escarole
     tags: true

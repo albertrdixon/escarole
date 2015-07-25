@@ -30,20 +30,37 @@ func main() {
 
 	log.WithField("config", *conf).Info("Picking Escarole! So leafy!")
 
-	app := newApp(*conf)
+	app, err := newApp(*conf)
+	if err != nil {
+		log.Warnf("Could not load config: %v", err)
+	}
+	log.Infof("Will be growing %v", app)
+
 	tick := time.NewTicker(*interval)
-	for {
-		select {
-		case <-sig:
-			os.Exit(0)
-		case t := <-tick.C:
-			for i := 0; i < 3; i++ {
-				err := app.update(t)
-				if err == nil {
-					break
-				}
-				time.Sleep(20 * time.Second)
+	log.Infof("Started timer. interval: %v", *interval)
+
+	done := make(chan struct{})
+	go func() {
+		for {
+			select {
+			case <-done:
+				return
+			case t := <-tick.C:
+				go func() {
+					for i := 0; i < 3; i++ {
+						err := app.update(t)
+						if err == nil {
+							break
+						}
+						time.Sleep(20 * time.Second)
+					}
+				}()
 			}
 		}
-	}
+	}()
+
+	<-sig
+	log.Info("Shutting down...")
+	done <- struct{}{}
+	os.Exit(0)
 }
