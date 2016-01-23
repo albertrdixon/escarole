@@ -7,12 +7,7 @@ import (
 
 	"github.com/albertrdixon/gearbox/logger"
 	"github.com/ghodss/yaml"
-	"github.com/imdario/mergo"
 	"golang.org/x/net/context"
-)
-
-var (
-	conf = &Config{Git: true}
 )
 
 func Read(file string) (*Config, error) {
@@ -82,5 +77,5 @@ func read(file string, info os.FileInfo) (*Config, error) {
 
 	c.file = file
 	c.modTime = info.ModTime()
-	return c, mergo.Merge(c, conf)
+	return c, nil
 }
