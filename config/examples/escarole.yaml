@@ -1,8 +1,0 @@
-name: echo
-dir: /bin
-command: echo "this is a test"
-uid: 7000
-gid: 7000
-env:
-  - FOO=bar
-  - BIF=baz

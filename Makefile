@@ -39,7 +39,7 @@ test-verbose:
 	@$(TEST_COMMAND) -test.v ./...
 
 build:
-	@echo "==> Building $(EXECUTABLE) with ldflags '$(LDFLAGS)'"
+	@echo "--> Building $(EXECUTABLE) with ldflags '$(LDFLAGS)'"
 	@ GOOS=linux CGO_ENABLED=0 godep go build -a -installsuffix cgo -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-linux $(PKG)
 	@ GOOS=darwin CGO_ENABLED=0 godep go build -a -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-darwin $(PKG)
 
@@ -54,6 +54,10 @@ package: build
 		test -f bin/$(EXECUTABLE)-$$p && \
 		tar czf $(EXECUTABLE)-$$p.tgz bin/$(EXECUTABLE)-$$p ; \
 	done
+
+container: build
+	@echo "--> Building Docker image"
+	@docker build -t escarole .
 
 clean:
 	go clean ./...

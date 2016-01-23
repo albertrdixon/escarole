@@ -6,17 +6,12 @@
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.8.7-53-g446d1c1",
-			"Rev": "446d1c146faa8ed3f4218f056fcd165f6bcfda81"
-		},
-		{
 			"ImportPath": "github.com/albertrdixon/gearbox/logger",
-			"Rev": "b67ae7468f5a2f2ff274cf64fa13e11123f7d475"
+			"Rev": "d332e189da709b1a6a621f610faf0881ad8ad9ee"
 		},
 		{
 			"ImportPath": "github.com/albertrdixon/gearbox/process",
-			"Rev": "b67ae7468f5a2f2ff274cf64fa13e11123f7d475"
+			"Rev": "d332e189da709b1a6a621f610faf0881ad8ad9ee"
 		},
 		{
 			"ImportPath": "github.com/alecthomas/template",
@@ -27,8 +22,8 @@
 			"Rev": "6b4e7dc5e3143b85ea77909c72caf89416fc2915"
 		},
 		{
-			"ImportPath": "github.com/davecgh/go-spew/spew",
-			"Rev": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+			"ImportPath": "github.com/cenkalti/backoff",
+			"Rev": "4dc77674aceaabba2c7e3da25d4c823edfb73f99"
 		},
 		{
 			"ImportPath": "github.com/ghodss/yaml",
@@ -39,53 +34,8 @@
 			"Rev": "0dc08b1671f34c4250ce212759ebd880f743d883"
 		},
 		{
-			"ImportPath": "github.com/kr/fs",
-			"Rev": "2788f0dbd16903de03cb8186e5c7d97b69ad387b"
-		},
-		{
-			"ImportPath": "github.com/pkg/sftp",
-			"Rev": "e84cc8c755ca39b7b64f510fe1fffc1b51f210a5"
-		},
-		{
-			"ImportPath": "github.com/pmezard/go-difflib/difflib",
-			"Rev": "e8554b8641db39598be7f6342874b958f12ae1d4"
-		},
-		{
-			"ImportPath": "github.com/prometheus/common/log",
-			"Rev": "0a3005bb37bc411040083a55372e77c405f6464c"
-		},
-		{
-			"ImportPath": "github.com/spf13/afero",
-			"Rev": "2ec8b79d6117d1cb941e1a15bf04f25f8b3c332c"
-		},
-		{
-			"ImportPath": "github.com/stretchr/testify/assert",
-			"Comment": "v1.0-88-ge3a8ff8",
-			"Rev": "e3a8ff8ce36581f87a15341206f205b1da467059"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/curve25519",
-			"Rev": "3760e016850398b85094c4c99e955b8c3dea5711"
-		},
-		{
-			"ImportPath": "golang.org/x/crypto/ssh",
-			"Rev": "3760e016850398b85094c4c99e955b8c3dea5711"
-		},
-		{
 			"ImportPath": "golang.org/x/net/context",
 			"Rev": "b2ed34f6fc8d65cc6a090fb87692ea6b1162fddd"
-		},
-		{
-			"ImportPath": "golang.org/x/sys/unix",
-			"Rev": "20457ee8ea8546920d3f4e19e405da45250dc5a5"
-		},
-		{
-			"ImportPath": "golang.org/x/text/transform",
-			"Rev": "cf4986612c83df6c55578ba198316d1684a9a287"
-		},
-		{
-			"ImportPath": "golang.org/x/text/unicode/norm",
-			"Rev": "cf4986612c83df6c55578ba198316d1684a9a287"
 		},
 		{
 			"ImportPath": "gopkg.in/alecthomas/kingpin.v2",
