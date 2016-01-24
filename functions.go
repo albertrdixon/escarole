@@ -66,7 +66,7 @@ func prepareApp(ctx context.Context) (app *process.Process, er error) {
 		app.SetEnv(e)
 	}
 
-	app.SetDir(path.Join("/src", *name))
+	app.SetDir(path.Join(home, *name))
 	app.SetUser(*uid, *gid)
 	return
 }
@@ -142,7 +142,7 @@ func kill(app *process.Process, c context.Context) error {
 
 func update(c context.Context) (bool, error) {
 	var (
-		dir    = path.Join("/src", *name)
+		dir    = path.Join(home, *name)
 		remote = []string{"remote", "update", "-p"}
 		merge  = []string{
 			"merge",
@@ -213,10 +213,10 @@ func clone(c context.Context) error {
 	)
 	logger.Infof("Cloning %q", *project)
 
-	if er := os.Mkdir("/src", 0755); er != nil {
+	if er := os.Mkdir(home, 0755); er != nil {
 		return er
 	}
-	if er := os.Chown("/src", int(*uid), int(*gid)); er != nil {
+	if er := os.Chown(home, int(*uid), int(*gid)); er != nil {
 		return er
 	}
 
@@ -224,7 +224,7 @@ func clone(c context.Context) error {
 	if *name == "" {
 		*name = strings.ToLower(path.Base(*project))
 	}
-	dir := path.Join("/src", *name)
+	dir := path.Join(home, *name)
 	if er := os.Setenv("APP_HOME", dir); er != nil {
 		logger.Warnf("Unable to set APP_HOME env var: %v", er)
 	}
@@ -244,7 +244,7 @@ func clone(c context.Context) error {
 	}
 
 	logger.Debugf("Executing %v", co)
-	if er := co.SetDir("/src").SetUser(*uid, *gid).Execute(c); er != nil {
+	if er := co.SetDir(home).SetUser(*uid, *gid).Execute(c); er != nil {
 		return er
 	}
 	<-co.Exited()
@@ -256,7 +256,7 @@ func getSHA() (string, error) {
 	b := new(bytes.Buffer)
 
 	sh := exec.Command(git, "rev-parse", "HEAD")
-	sh.Dir = path.Join("/src", *name)
+	sh.Dir = path.Join(home, *name)
 	sh.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
 			Uid: *uid,
@@ -282,7 +282,7 @@ func getRef() (string, error) {
 	b := new(bytes.Buffer)
 
 	re := exec.Command(git, "rev-parse", "--abbrev-ref", "HEAD")
-	re.Dir = path.Join("/src", *name)
+	re.Dir = path.Join(home, *name)
 	re.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
 			Uid: *uid,

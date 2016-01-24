@@ -7,6 +7,7 @@ run: docker
 	docker run --rm --name sickrage \
 		--publish 8081:8081 $(IMAGE_TAG) \
 		--branch=master --update-interval=1h \
+		--uid=7000 --gid=7000 \
 		SickRage/SickRage sickrage
 
 docker:

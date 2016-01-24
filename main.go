@@ -30,6 +30,7 @@ var (
 	git    string
 	sha    string
 	ref    string
+	home   = "/src"
 	stdout = []io.Writer{os.Stdout}
 )
 
@@ -70,6 +71,11 @@ func main() {
 }
 
 func setup(c context.Context) error {
+	logger.Infof("Setting HOME to %s", home)
+	if er := os.Setenv("HOME", home); er != nil {
+		logger.Warnf(er.Error())
+	}
+
 	logger.Infof("Caching git binary location")
 	g, er := exec.LookPath("git")
 	if er != nil {

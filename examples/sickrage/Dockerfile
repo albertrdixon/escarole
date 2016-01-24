@@ -10,7 +10,10 @@ RUN apk add --update \
       py-pillow \
       python \
       unrar \
-    && mkdir /data
+    && addgroup -g 7000 sickrage \
+    && adduser -s /sbin/nologin -D -H -G sickrage -u 7000 sickrage \
+    && mkdir /data \
+    && chown -Rc sickrage:sickrage /data
 
 ENV SB_DATA=/data
 COPY escarole.yml /
