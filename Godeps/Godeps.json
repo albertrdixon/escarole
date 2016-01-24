@@ -7,11 +7,11 @@
 	"Deps": [
 		{
 			"ImportPath": "github.com/albertrdixon/gearbox/logger",
-			"Rev": "d332e189da709b1a6a621f610faf0881ad8ad9ee"
+			"Rev": "b1709c1430ad6644de47432cf3f4ac24c6a041d6"
 		},
 		{
 			"ImportPath": "github.com/albertrdixon/gearbox/process",
-			"Rev": "d332e189da709b1a6a621f610faf0881ad8ad9ee"
+			"Rev": "b1709c1430ad6644de47432cf3f4ac24c6a041d6"
 		},
 		{
 			"ImportPath": "github.com/alecthomas/template",

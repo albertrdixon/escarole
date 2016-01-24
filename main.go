@@ -16,16 +16,16 @@ import (
 )
 
 var (
-	app      = kingpin.New("escarole", "Keeps your app leafy fresh")
-	project  = app.Arg("project", "github project").Required().String()
-	name     = app.Arg("name", "app name").String()
+	app      = kingpin.New("escarole", "Keeps your app leafy fresh!")
+	project  = app.Arg("project", "github project. Format: Organization/Project, e.g. albertrdixon/escarole").Required().String()
+	name     = app.Arg("name", "app name. If not given will use lowercase project name, e.g. Org/MyProject -> myproject").String()
 	conf     = app.Flag("config", "path to command config").Short('C').Default("/escarole.yml").OverrideDefaultFromEnvar("CONFIG").ExistingFile()
 	branch   = app.Flag("branch", "branch to use").Short('b').OverrideDefaultFromEnvar("BRANCH").String()
-	interval = app.Flag("update-interval", "app update interval").Short('u').Default("24h").OverrideDefaultFromEnvar("UPDATE_INTERVAL").Duration()
-	uid      = app.Flag("uid", "process uid").Default("0").OverrideDefaultFromEnvar("APP_UID").Uint32()
-	gid      = app.Flag("gid", "process gid").Default("0").OverrideDefaultFromEnvar("APP_GID").Uint32()
-	env      = app.Flag("env", "Env vars").Short('e').StringMap()
-	logLevel = app.Flag("log-level", "log level. One of: fatal, error, warn, info, debug").Short('l').Default("info").OverrideDefaultFromEnvar("LOG_LEVEL").Enum(logger.Levels...)
+	interval = app.Flag("update-interval", "app update interval. Must be able to be parsed by time.ParseDuration").Short('u').Default("24h").OverrideDefaultFromEnvar("UPDATE_INTERVAL").Duration()
+	uid      = app.Flag("uid", "app uid").Default("0").OverrideDefaultFromEnvar("APP_UID").Uint32()
+	gid      = app.Flag("gid", "app gid").Default("0").OverrideDefaultFromEnvar("APP_GID").Uint32()
+	env      = app.Flag("env", "app env vars").Short('e').PlaceHolder("key=value").StringMap()
+	logLevel = app.Flag("log-level", "log level.").Short('l').PlaceHolder("{debug,info,warn,error,fatal}").Default("info").OverrideDefaultFromEnvar("LOG_LEVEL").Enum(logger.Levels...)
 
 	git    string
 	sha    string

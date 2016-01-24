@@ -252,7 +252,7 @@ func clone(c context.Context) error {
 }
 
 func getSHA() (string, error) {
-	logger.Infof("Determining HEAD sha")
+	logger.Debugf("Determining HEAD sha")
 	b := new(bytes.Buffer)
 
 	sh := exec.Command(git, "rev-parse", "HEAD")
@@ -268,12 +268,17 @@ func getSHA() (string, error) {
 	if er := sh.Run(); er != nil {
 		return "", er
 	}
-	logger.Infof("HEAD sha: %s", b.String()[:10])
+
+	if sha != "" {
+		logger.Infof("HEAD sha: %s (current: %s)", b.String()[:10], sha[:10])
+	} else {
+		logger.Infof("HEAD sha: %s", b.String()[:10])
+	}
 	return strings.TrimSpace(b.String()), nil
 }
 
 func getRef() (string, error) {
-	logger.Infof("Determining current ref")
+	logger.Debugf("Determining current ref")
 	b := new(bytes.Buffer)
 
 	re := exec.Command(git, "rev-parse", "--abbrev-ref", "HEAD")
@@ -290,6 +295,6 @@ func getRef() (string, error) {
 		return "", er
 	}
 	r := strings.TrimSpace(b.String())
-	logger.Infof("Current ref: %s", r)
+	logger.Infof("Current ref: %q", r)
 	return r, nil
 }

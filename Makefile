@@ -1,63 +1,60 @@
 PROJECT = github.com/albertrdixon/escarole
-EXECUTABLE = "escarole"
+EXECUTABLE = escarole
+IMAGE_TAG ?= escarole_base
 PKG = .
-LDFLAGS = "-s"
-TEST_COMMAND = godep go test
-PLATFORMS = linux darwin
-BUILD_ARGS = ""
+LDFLAGS ?= "-s"
+PLATFORMS ?= linux darwin
 
-.PHONY: dep-save dep-restore test test-verbose build install clean
+.PHONY: docker release save restore test build install package container clean
 
-all: test
+release: test package
+docker: container
 
 help:
 	@echo "Available targets:"
 	@echo ""
-	@echo "  dep-save"
-	@echo "  dep-restore"
-	@echo "  test"
-	@echo "  test-verbose"
 	@echo "  build"
-	@echo "  build-docker"
-	@echo "  install"
 	@echo "  clean"
+	@echo "  container"
+	@echo "  docker"
+	@echo "  install"
+	@echo "  package"
+	@echo "  release (default)"
+	@echo "  restore"
+	@echo "  save"
+	@echo "  test"
 
-dep-save:
+save:
 	godep save ./...
 
-dep-restore:
+restore:
 	godep restore
 
 test:
-	@echo "==> Running all tests"
+	@echo "--> Running all tests"
 	@echo ""
-	@$(TEST_COMMAND) ./...
-
-test-verbose:
-	@echo "==> Running all tests (verbose output)"
-	@ echo ""
-	@$(TEST_COMMAND) -test.v ./...
+	@godep go test $(TEST_OPTS) ./...
 
 build:
 	@echo "--> Building $(EXECUTABLE) with ldflags '$(LDFLAGS)'"
-	@ GOOS=linux CGO_ENABLED=0 godep go build -a -installsuffix cgo -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-linux $(PKG)
-	@ GOOS=darwin CGO_ENABLED=0 godep go build -a -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-darwin $(PKG)
+	@GOOS=linux CGO_ENABLED=0 godep go build -a -installsuffix cgo -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-linux $(PKG)
+	@GOOS=darwin CGO_ENABLED=0 godep go build -a -ldflags $(LDFLAGS) -o bin/$(EXECUTABLE)-darwin $(PKG)
 
 install:
-	@echo "==> Installing $(EXECUTABLE) with ldflags $(LDFLAGS)"
+	@echo "--> Installing $(EXECUTABLE) with ldflags $(LDFLAGS)"
 	@godep go install -ldflags $(LDFLAGS) $(INSTALL)
 
 package: build
-	@echo "==> Tar'ing up the binaries"
+	@echo "--> Tar'ing up the binaries"
 	@for p in $(PLATFORMS) ; do \
-		echo "==> Tar'ing up $$p/amd64 binary" ; \
+		echo "--> Tar'ing up $$p/amd64 binary" ; \
 		test -f bin/$(EXECUTABLE)-$$p && \
 		tar czf $(EXECUTABLE)-$$p.tgz bin/$(EXECUTABLE)-$$p ; \
 	done
 
 container: build
-	@echo "--> Building Docker image"
-	@docker build -t escarole .
+	@echo "--> Building $(IMAGE_TAG) Docker image"
+	@docker build -t $(IMAGE_TAG) .
 
 clean:
 	go clean ./...
