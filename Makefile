@@ -49,7 +49,9 @@ package: build
 	@for p in $(PLATFORMS) ; do \
 		echo "--> Tar'ing up $$p/amd64 binary" ; \
 		test -f bin/$(EXECUTABLE)-$$p && \
-		tar czf $(EXECUTABLE)-$$p.tgz bin/$(EXECUTABLE)-$$p ; \
+		mv bin/$(EXECUTABLE)-$$p $(EXECUTABLE) && \
+		tar czf $(EXECUTABLE)-$$p.tgz $(EXECUTABLE) && \
+		rm -vf $(EXECUTABLE) ; \
 	done
 
 container: build
@@ -58,4 +60,4 @@ container: build
 
 clean:
 	go clean ./...
-	rm -rf escarole *.tar.gz
+	rm -rf bin escarole *.tgz
