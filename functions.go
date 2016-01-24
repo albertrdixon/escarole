@@ -94,16 +94,18 @@ func run(app *process.Process, c context.Context, cancel context.CancelFunc) {
 			}
 		case t := <-up.C:
 			logger.Infof("Updating %v at %v", *name, t.Format(time.Stamp))
-			updated, er := update(c)
+			head, updated, er := update(c)
 			if er != nil {
 				logger.Errorf("Failed update: %v", er)
 				continue
 			}
 			if updated {
 				logger.Infof("Restarting %v", app)
-				if er := kill(app, c); er != nil {
+				if er := stop(app, c); er != nil {
 					logger.Errorf("Failed to kill %v: %v", app, er)
 					failures++
+				} else {
+					sha = head
 				}
 			}
 		}
@@ -112,18 +114,40 @@ func run(app *process.Process, c context.Context, cancel context.CancelFunc) {
 	cancel()
 }
 
-func kill(app *process.Process, c context.Context) error {
+func stop(app *process.Process, c context.Context) error {
 	exp := backoff.NewExponentialBackOff()
 	exp.MaxElapsedTime = 60 * time.Second
 
 	notify := func(er error, to time.Duration) {
-		logger.Warnf("Failed to kill %v (retry in %v): %v", app, to, er)
+		logger.Warnf("Failed to stop %v (retry in %v): %v", app, to, er)
 	}
-	operation := func() error {
-		t := time.NewTimer(4 * time.Second)
+	return backoff.RetryNotify(term(app, c), exp, notify)
+}
+
+func kill(app *process.Process, c context.Context) error {
+	t := time.NewTimer(5 * time.Second)
+	defer t.Stop()
+
+	if er := app.Process.Kill(); er != nil {
+		return er
+	}
+
+	select {
+	case <-c.Done():
+		return nil
+	case <-app.Exited():
+		return nil
+	case <-t.C:
+		return errors.New("timeout")
+	}
+}
+
+func term(app *process.Process, c context.Context) backoff.Operation {
+	return func() error {
+		t := time.NewTimer(5 * time.Second)
 		defer t.Stop()
 
-		if er := app.Process.Kill(); er != nil {
+		if er := app.Process.Signal(syscall.SIGTERM); er != nil {
 			return er
 		}
 
@@ -133,14 +157,12 @@ func kill(app *process.Process, c context.Context) error {
 		case <-app.Exited():
 			return nil
 		case <-t.C:
-			return errors.New("timeout")
+			return kill(app, c)
 		}
 	}
-
-	return backoff.RetryNotify(operation, exp, notify)
 }
 
-func update(c context.Context) (bool, error) {
+func update(c context.Context) (string, bool, error) {
 	var (
 		dir    = path.Join(home, *name)
 		remote = []string{"remote", "update", "-p"}
@@ -161,11 +183,11 @@ func update(c context.Context) (bool, error) {
 		stdout...,
 	)
 	if er != nil {
-		return false, er
+		return sha, false, er
 	}
 
 	if er := rem.SetDir(dir).SetUser(*uid, *gid).Execute(c); er != nil {
-		return false, er
+		return sha, false, er
 	}
 	<-rem.Exited()
 
@@ -176,11 +198,11 @@ func update(c context.Context) (bool, error) {
 		stdout...,
 	)
 	if er != nil {
-		return false, er
+		return sha, false, er
 	}
 
 	if er := co.SetDir(dir).SetUser(*uid, *gid).Execute(c); er != nil {
-		return false, er
+		return sha, false, er
 	}
 	<-co.Exited()
 
@@ -191,20 +213,20 @@ func update(c context.Context) (bool, error) {
 		stdout...,
 	)
 	if er != nil {
-		return false, er
+		return sha, false, er
 	}
 
 	if er := me.SetDir(dir).SetUser(*uid, *gid).Execute(c); er != nil {
-		return false, er
+		return sha, false, er
 	}
 	<-me.Exited()
 
 	// find sha
 	head, er := getSHA()
 	if er != nil {
-		return false, er
+		return sha, false, er
 	}
-	return sha != head, nil
+	return head, sha != head, nil
 }
 
 func clone(c context.Context) error {
@@ -213,7 +235,7 @@ func clone(c context.Context) error {
 	)
 	logger.Infof("Cloning %q", *project)
 
-	if er := os.Mkdir(home, 0755); er != nil {
+	if er := os.MkdirAll(home, 0755); er != nil {
 		return er
 	}
 	if er := os.Chown(home, int(*uid), int(*gid)); er != nil {

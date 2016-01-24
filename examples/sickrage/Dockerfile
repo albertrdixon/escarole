@@ -11,7 +11,8 @@ RUN apk add --update \
       python \
       unrar \
     && addgroup -g 7000 sickrage \
-    && adduser -s /sbin/nologin -D -H -G sickrage -u 7000 sickrage \
+    && adduser -s /sbin/nologin -D -h /src -G sickrage -u 7000 sickrage \
+    && adduser sickrage users \
     && mkdir /data \
     && chown -Rc sickrage:sickrage /data
 
