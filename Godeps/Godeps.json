@@ -1,39 +1,50 @@
 {
 	"ImportPath": "github.com/albertrdixon/escarole",
-	"GoVersion": "go1.4.2",
+	"GoVersion": "go1.5",
 	"Packages": [
 		"./..."
 	],
 	"Deps": [
 		{
-			"ImportPath": "github.com/Sirupsen/logrus",
-			"Comment": "v0.6.6-2-g2cea0f0",
-			"Rev": "2cea0f0d141f56fae06df5b813ec4119d1c8ccbd"
+			"ImportPath": "github.com/albertrdixon/gearbox/logger",
+			"Rev": "b1709c1430ad6644de47432cf3f4ac24c6a041d6"
+		},
+		{
+			"ImportPath": "github.com/albertrdixon/gearbox/process",
+			"Rev": "b1709c1430ad6644de47432cf3f4ac24c6a041d6"
+		},
+		{
+			"ImportPath": "github.com/alecthomas/template",
+			"Rev": "b867cc6ab45cece8143cfcc6fc9c77cf3f2c23c0"
 		},
 		{
 			"ImportPath": "github.com/alecthomas/units",
 			"Rev": "6b4e7dc5e3143b85ea77909c72caf89416fc2915"
 		},
 		{
-			"ImportPath": "github.com/davecgh/go-spew/spew",
-			"Rev": "3e6e67c4dcea3ac2f25fd4731abc0e1deaf36216"
+			"ImportPath": "github.com/cenkalti/backoff",
+			"Rev": "4dc77674aceaabba2c7e3da25d4c823edfb73f99"
 		},
 		{
 			"ImportPath": "github.com/ghodss/yaml",
-			"Rev": "c3eb24aeea63668ebdac08d2e252f20df8b6b1ae"
+			"Rev": "73d445a93680fa1a78ae23a5839bad48f32ba1ee"
 		},
 		{
-			"ImportPath": "github.com/spf13/afero",
-			"Rev": "139e50e29af82d1d998f0e38fabf4947c668acc6"
+			"ImportPath": "github.com/hashicorp/logutils",
+			"Rev": "0dc08b1671f34c4250ce212759ebd880f743d883"
 		},
 		{
-			"ImportPath": "gopkg.in/alecthomas/kingpin.v1",
-			"Comment": "v1.3.6",
-			"Rev": "55a69a226d28a43b913720f5d765706d49c8fa9e"
+			"ImportPath": "golang.org/x/net/context",
+			"Rev": "b2ed34f6fc8d65cc6a090fb87692ea6b1162fddd"
+		},
+		{
+			"ImportPath": "gopkg.in/alecthomas/kingpin.v2",
+			"Comment": "v2.1.0",
+			"Rev": "72bf19f454c6822cfb2cf128c77ef8d70667df35"
 		},
 		{
 			"ImportPath": "gopkg.in/yaml.v2",
-			"Rev": "49c95bdc21843256fb6c4e0d370a05f24a0bf213"
+			"Rev": "f7716cbe52baa25d2e9b0d0da546fcf909fc16b4"
 		}
 	]
 }

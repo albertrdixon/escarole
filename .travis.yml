@@ -2,8 +2,8 @@ os: linux
 language: go
 go: 1.4.2
 install: go get github.com/tools/godep
-before_script: make dep-restore
-script: make test-verbose
+before_script: make restore
+script: make test
 after_success:
   - "cd $GOROOT/src && GOOS=darwin GOARCH=amd64 ./make.bash --no-clean && cd -"
   - make package
