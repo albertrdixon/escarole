@@ -1,4 +1,5 @@
 IMAGE_TAG ?= sickrage_example
+INTERVAL ?= 1h
 
 .PHONY: run docker
 
@@ -6,7 +7,7 @@ run: docker
 	@echo "--> Running $(IMAGE_TAG)"
 	docker run --rm --name sickrage \
 		--publish 8081:8081 $(IMAGE_TAG) \
-		--branch=master --update-interval=1h \
+		--branch=master --update-interval=$(INTERVAL) \
 		--uid=7000 --gid=7000 \
 		SickRage/SickRage sickrage
 
