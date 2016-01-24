@@ -235,7 +235,7 @@ func clone(c context.Context) error {
 	)
 	logger.Infof("Cloning %q", *project)
 
-	if er := os.Mkdir(home, 0755); er != nil {
+	if er := os.MkdirAll(home, 0755); er != nil {
 		return er
 	}
 	if er := os.Chown(home, int(*uid), int(*gid)); er != nil {
